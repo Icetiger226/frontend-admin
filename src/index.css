@@ -11,3 +11,8 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+/* React Admin fixes for CRA baseline */
+html, body, #root {
+  height: 100%;
+}
