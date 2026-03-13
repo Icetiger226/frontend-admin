@@ -18,7 +18,7 @@ import {
   BulkDeleteButton,
 } from 'react-admin';
 import { Box, Card, CardContent, Divider, Typography, Dialog, DialogContent, DialogTitle, DialogActions, TextField as MuiTextField } from '@mui/material';
-import { useRecordContext } from 'ra-core';
+import { useRecordContext } from 'react-admin';
 import { useFormContext } from 'react-hook-form';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
