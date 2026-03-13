@@ -1,0 +1,129 @@
+# netlify.toml
+
+[build]
+  publish = "build"
+  command = "npm install --legacy-peer-deps && CI=false npm run build"
+[build.environment]
+  NODE_VERSION = "18"
+  NPM_VERSION = "9"
+
+# Headers pour la sécurité et la performance
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.tailwindcss.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; connect-src 'self' https://api.netlify.com https://www.google-analytics.com https://backend-association.onrender.com; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests;"
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+
+# Headers pour les assets statiques (cache long)
+[[headers]]
+  for = "/static/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+    X-Content-Type-Options = "nosniff"
+
+# Headers pour les images (cache moyen)
+[[headers]]
+  for = "*.jpg"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"
+    X-Content-Type-Options = "nosniff"
+
+[[headers]]
+  for = "*.jpeg"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"
+    X-Content-Type-Options = "nosniff"
+
+[[headers]]
+  for = "*.png"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"
+    X-Content-Type-Options = "nosniff"
+
+[[headers]]
+  for = "*.gif"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"
+    X-Content-Type-Options = "nosniff"
+
+[[headers]]
+  for = "*.svg"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"
+    X-Content-Type-Options = "nosniff"
+
+[[headers]]
+  for = "*.webp"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"
+    X-Content-Type-Options = "nosniff"
+
+# Headers pour les fonts (cache long)
+[[headers]]
+  for = "*.woff"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000"
+    X-Content-Type-Options = "nosniff"
+
+[[headers]]
+  for = "*.woff2"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000"
+    X-Content-Type-Options = "nosniff"
+
+# Headers pour les fichiers de données (pas de cache)
+[[headers]]
+  for = "*.json"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+    Pragma = "no-cache"
+    Expires = "0"
+
+# Headers pour le service worker
+[[headers]]
+  for = "/service-worker.js"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+    Pragma = "no-cache"
+    Expires = "0"
+
+# Headers pour le manifest
+[[headers]]
+  for = "/manifest.json"
+  [headers.values]
+    Cache-Control = "public, max-age=3600"
+    X-Content-Type-Options = "nosniff"
+
+# Headers pour les robots et sitemap
+[[headers]]
+  for = "/robots.txt"
+  [headers.values]
+    Cache-Control = "public, max-age=3600"
+
+[[headers]]
+  for = "/sitemap.xml"
+  [headers.values]
+    Cache-Control = "public, max-age=3600"
+
+# Redirections
+[[redirects]]
+  from = "/admin/*"
+  to = "/404.html"
+  status = 404
+
+[[redirects]]
+  from = "/api/*"
+  to = "/404.html"
+  status = 404
+
+# Gestion des erreurs
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Compression automatique activée par défaut sur Netlify
