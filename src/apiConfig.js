@@ -1,12 +1,20 @@
 /**
  * API base URL + fetch avec cookies httpOnly (access/refresh).
  * Pas de JWT dans localStorage : le navigateur envoie les cookies automatiquement.
+
  *
  * Production Netlify : REACT_APP_API_URL=/api (proxy same-origin → Render, voir netlify.toml).
  * Local : http://localhost:5000/api
  */
 const raw = process.env.REACT_APP_API_URL;
 export const API_URL = (raw && raw.replace(/\/$/, '')) || 'http://localhost:5000/api';
+
+function getCookie(name) {
+  if (typeof document === 'undefined') return null;
+  const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const match = document.cookie.match(new RegExp(`(?:^|; )${escaped}=([^;]*)`));
+  return match ? decodeURIComponent(match[1]) : null;
+}
 
 /**
  * GET/POST/etc. avec credentials + tentative de refresh si 401.
@@ -22,6 +30,15 @@ export async function credFetch(url, options = {}) {
       ...(options.headers || {}),
     },
   };
+
+  const method = String(opts.method || 'GET').toUpperCase();
+  const isWriteMethod = !['GET', 'HEAD', 'OPTIONS'].includes(method);
+  if (isWriteMethod && !opts.headers['X-CSRF-Token']) {
+    const csrf = getCookie('csrf_token');
+    if (csrf) {
+      opts.headers['X-CSRF-Token'] = csrf;
+    }
+  }
 
   let res = await fetch(url, opts);
 
