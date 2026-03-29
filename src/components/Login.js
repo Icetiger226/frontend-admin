@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import authProvider from '../authProvider';
 import Register from './Register';
 import './Register.css';
 
 const Login = () => {
-  const { login } = useAuth();
   const navigate = useNavigate();
   const [form, setForm] = useState({ email: '', password: '' });
   const [error, setError] = useState(null);
@@ -22,13 +21,9 @@ const Login = () => {
     setLoading(true);
     setError(null);
     try {
-      const result = await login(form);
-      if (result.success) {
-        // Rediriger vers l'interface admin après connexion réussie
-        navigate('/', { replace: true });
-      } else {
-        setError(result.message || 'Erreur de connexion');
-      }
+      // Même flux que React Admin (cookies httpOnly + X-Use-Cookie-Auth) — obligatoire pour /verify et /refresh
+      await authProvider.login({ username: form.email, password: form.password });
+      navigate('/', { replace: true });
     } catch (e) {
       setError(e?.message || 'Erreur de connexion');
     } finally {
