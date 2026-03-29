@@ -1,4 +1,4 @@
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+import { API_URL, credFetch } from './apiConfig';
 
 // Mapping React-Admin resources -> backend routes
 // - Standard collections (CRUD): activites, actualites, membres, temoignages
@@ -6,16 +6,14 @@ const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 // - Messages and Newsletter have custom admin endpoints for list/filtering
 
 const httpClient = async (url, options = {}) => {
-  // Attach Authorization header if token exists
-  const token = typeof window !== 'undefined' ? window.localStorage.getItem('authToken') : null;
   const opts = {
+    ...options,
     headers: {
       'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...(options.headers || {}),
     },
-    ...options,
   };
-  const res = await fetch(url, opts);
+  const res = await credFetch(url, opts);
   if (!res.ok) {
     const text = await res.text();
     throw new Error(`HTTP ${res.status}: ${text}`);

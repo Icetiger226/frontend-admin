@@ -1,6 +1,6 @@
 export function getRole() {
   if (typeof window === 'undefined') return null;
-  return window.localStorage.getItem('authRole');
+  return sessionStorage.getItem('authRole');
 }
 
 export function isSuperAdmin() {

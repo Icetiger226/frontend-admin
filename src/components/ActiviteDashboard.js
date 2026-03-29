@@ -37,6 +37,7 @@ import {
   Analytics as AnalyticsIcon
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import { API_URL, credFetch } from '../apiConfig';
 
 const ActiviteDashboard = () => {
   const navigate = useNavigate();
@@ -53,7 +54,7 @@ const ActiviteDashboard = () => {
   const [previewDialog, setPreviewDialog] = useState({ open: false, activity: null });
 
   useEffect(() => {
-    const role = localStorage.getItem('authRole');
+    const role = sessionStorage.getItem('authRole');
     setUserRole(role);
     loadActiviteStats();
     loadRecentActivities();
@@ -61,12 +62,7 @@ const ActiviteDashboard = () => {
 
   const loadActiviteStats = async () => {
     try {
-      const token = localStorage.getItem('authToken');
-      const API = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
-
-      const response = await fetch(`${API}/activites/stats`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await credFetch(`${API_URL}/activites/stats`);
 
       if (response.ok) {
         const data = await response.json();
@@ -79,16 +75,11 @@ const ActiviteDashboard = () => {
 
   const loadRecentActivities = async () => {
     try {
-      const token = localStorage.getItem('authToken');
-      const API = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
-
-      const response = await fetch(`${API}/activites?limit=5`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await credFetch(`${API_URL}/activites`);
 
       if (response.ok) {
         const data = await response.json();
-        setRecentActivities(data);
+        setRecentActivities(Array.isArray(data) ? data.slice(0, 5) : []);
       }
     } catch (error) {
       console.error('Erreur lors du chargement des activités récentes:', error);

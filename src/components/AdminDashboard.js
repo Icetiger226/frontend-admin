@@ -14,6 +14,7 @@ import { useNavigate } from 'react-router-dom';
 import RoleNav from './RoleNav';
 import { useThemeMode } from '../contexts/ThemeModeContext';
 import AdminAnalyticsCharts from './AdminAnalyticsCharts';
+import { API_URL, credFetch } from '../apiConfig';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -32,8 +33,8 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     // Récupérer le rôle et l'email de l'utilisateur connecté
-    const role = localStorage.getItem('authRole');
-    const email = localStorage.getItem('authEmail');
+    const role = sessionStorage.getItem('authRole');
+    const email = sessionStorage.getItem('authEmail');
     setUserRole(role);
     setUserEmail(email);
 
@@ -43,23 +44,14 @@ const AdminDashboard = () => {
 
   const loadStats = async (role) => {
     try {
-      const token = localStorage.getItem('authToken');
-      const API = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+      const API = API_URL;
 
       // Statistiques communes (activités, actualités, messages, newsletter)
       const commonStats = await Promise.all([
-        fetch(`${API}/activites/stats`, {
-          headers: { Authorization: `Bearer ${token}` }
-        }),
-        fetch(`${API}/actualites/stats`, {
-          headers: { Authorization: `Bearer ${token}` }
-        }),
-        fetch(`${API}/messages/stats`, {
-          headers: { Authorization: `Bearer ${token}` }
-        }),
-        fetch(`${API}/newsletter/stats`, {
-          headers: { Authorization: `Bearer ${token}` }
-        })
+        credFetch(`${API}/activites/stats`),
+        credFetch(`${API}/actualites/stats`),
+        credFetch(`${API}/messages/stats`),
+        credFetch(`${API}/newsletter/stats`),
       ]);
 
       const [activitesRes, actualitesRes, messagesRes, newsletterRes] = commonStats;
@@ -87,15 +79,9 @@ const AdminDashboard = () => {
       // Statistiques super_admin uniquement
       if (role === 'super_admin') {
         const superAdminStats = await Promise.all([
-          fetch(`${API}/membres/stats`, {
-            headers: { Authorization: `Bearer ${token}` }
-          }),
-          fetch(`${API}/temoignages/stats`, {
-            headers: { Authorization: `Bearer ${token}` }
-          }),
-          fetch(`${API}/sponsors/stats`, {
-            headers: { Authorization: `Bearer ${token}` }
-          })
+          credFetch(`${API}/membres/stats`),
+          credFetch(`${API}/temoignages/stats`),
+          credFetch(`${API}/sponsors/stats`),
         ]);
 
         const [membresRes, temoignagesRes, sponsorsRes] = superAdminStats;

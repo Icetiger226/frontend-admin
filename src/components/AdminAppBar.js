@@ -7,7 +7,7 @@ import { useThemeMode } from '../contexts/ThemeModeContext';
 
 const AdminAppBar = (props) => {
   const { mode, toggleMode } = useThemeMode();
-  const email = (typeof window !== 'undefined' && window.localStorage.getItem('authEmail')) || '';
+  const email = (typeof window !== 'undefined' && sessionStorage.getItem('authEmail')) || '';
 
   return (
     <AppBar

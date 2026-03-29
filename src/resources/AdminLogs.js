@@ -1,5 +1,6 @@
 import React from 'react';
 import { List, Datagrid, TextField, DateField, TopToolbar, ExportButton, TextInput, SelectInput, useRecordContext, Button, useNotify } from 'react-admin';
+import { API_URL, credFetch } from '../apiConfig';
 
 const listSx = {
   px: { xs: 1, sm: 2 },
@@ -37,10 +38,9 @@ const ExportRawButton = () => {
       const params = new URLSearchParams(window.location.search);
       const type = params.get('filter%5Btype%5D') || 'combined';
       const date = params.get('filter%5Bdate%5D') || '';
-      const base = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
-      const token = localStorage.getItem('authToken');
+      const base = API_URL;
       const url = `${base}/admin/logs/export?type=${encodeURIComponent(type)}${date ? `&date=${encodeURIComponent(date)}` : ''}`;
-      const res = await fetch(url, { headers: token ? { Authorization: `Bearer ${token}` } : {} });
+      const res = await credFetch(url);
       if (!res.ok) throw new Error('Export failed');
       const blob = await res.blob();
       const a = document.createElement('a');

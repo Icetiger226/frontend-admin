@@ -15,6 +15,7 @@ import {
   SelectInput,
 } from 'react-admin';
 import { Card, CardContent, Button as MuiButton, Chip, Stack, Typography, Divider } from '@mui/material';
+import { API_URL, credFetch } from '../apiConfig';
 
 const StatusChip = (props) => {
   const value = props.record?.status;
@@ -31,16 +32,15 @@ const RoleChip = (props) => {
 const Actions = ({ record }) => {
   const refresh = useRefresh();
   const notify = useNotify();
-  const API = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
-  const token = typeof window !== 'undefined' ? window.localStorage.getItem('authToken') : null;
+  const API = API_URL;
 
   const call = (url, options = {}) => {
-    return fetch(url, {
+    return credFetch(url, {
+      ...options,
       headers: {
         'Content-Type': 'application/json',
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...(options.headers || {}),
       },
-      ...options,
     }).then(async (res) => {
       const text = await res.text();
       if (!res.ok) throw new Error(`HTTP ${res.status}: ${text}`);

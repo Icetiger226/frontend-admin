@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Admin, Resource, Layout } from 'react-admin';
 import { useTheme } from '@mui/material/styles';
@@ -49,11 +49,12 @@ import { AdminUserList, AdminUserShow } from './resources/AdminUsers';
 import { AdminLogsList } from './resources/AdminLogs';
 import { AuditLogsList } from './resources/AuditLogs';
 import AdminLayout from './components/AdminLayout';
+import { API_URL } from './apiConfig';
 
 // Composant pour l'interface admin React Admin
 const AdminInterface = () => {
   const muiTheme = useTheme();
-  const role = (typeof window !== 'undefined' && window.localStorage.getItem('authRole')) || null;
+  const role = (typeof window !== 'undefined' && sessionStorage.getItem('authRole')) || null;
   const isSuperAdmin = role === 'super_admin';
 
   return (
@@ -80,14 +81,42 @@ const AdminInterface = () => {
   );
 };
 
-// Composant pour vérifier l'authentification
+// Vérification session via cookies httpOnly (verify + refresh si besoin)
 const ProtectedRoute = ({ children }) => {
-  const token = typeof window !== 'undefined' ? window.localStorage.getItem('authToken') : null;
-  
-  if (!token) {
-    return <Navigate to="/login" replace />;
-  }
-  
+  const [state, setState] = useState({ loading: true, ok: false });
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        let res = await fetch(`${API_URL}/auth/verify`, { credentials: 'include' });
+        if (res.status === 401) {
+          const r2 = await fetch(`${API_URL}/auth/refresh`, {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+          });
+          if (r2.ok) {
+            res = await fetch(`${API_URL}/auth/verify`, { credentials: 'include' });
+          }
+        }
+        if (res.ok) {
+          const data = await res.json().catch(() => ({}));
+          if (data.user?.role) sessionStorage.setItem('authRole', data.user.role);
+          if (data.user?.email) sessionStorage.setItem('authEmail', data.user.email);
+        }
+        if (!cancelled) setState({ loading: false, ok: res.ok });
+      } catch {
+        if (!cancelled) setState({ loading: false, ok: false });
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  if (state.loading) return null;
+  if (!state.ok) return <Navigate to="/login" replace />;
   return children;
 };
 

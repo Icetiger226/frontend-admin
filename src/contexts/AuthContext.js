@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useMemo, useState } from 'react';
-
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+import { API_URL } from '../apiConfig';
 
 const AuthContext = createContext(null);
 
@@ -33,7 +32,11 @@ export const AuthProvider = ({ children }) => {
       setError(null);
       const res = await fetch(`${API_URL}/auth/login`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Use-Cookie-Auth': '1',
+        },
         body: JSON.stringify({ email, password }),
       });
       const data = await res.json().catch(() => ({}));
@@ -42,10 +45,9 @@ export const AuthProvider = ({ children }) => {
         setError(message);
         return { success: false, message };
       }
-      const { token, user } = data || {};
-      if (token) window.localStorage.setItem('authToken', token);
-      if (user?.role) window.localStorage.setItem('authRole', user.role);
-      if (user?.email) window.localStorage.setItem('authEmail', user.email);
+      const { user } = data || {};
+      if (user?.role) sessionStorage.setItem('authRole', user.role);
+      if (user?.email) sessionStorage.setItem('authEmail', user.email);
       return { success: true, data };
     } catch (e) {
       setError(e.message || 'Erreur réseau');
@@ -53,10 +55,14 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const logout = () => {
-    window.localStorage.removeItem('authToken');
-    window.localStorage.removeItem('authRole');
-    window.localStorage.removeItem('authEmail');
+  const logout = async () => {
+    await fetch(`${API_URL}/auth/logout`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+    }).catch(() => {});
+    sessionStorage.removeItem('authRole');
+    sessionStorage.removeItem('authEmail');
   };
 
   const value = useMemo(() => ({ register, login, logout, error, setError }), [error]);

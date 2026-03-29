@@ -5,7 +5,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 const RoleNav = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const role = (typeof window !== 'undefined' && window.localStorage.getItem('authRole')) || null;
+  const role = (typeof window !== 'undefined' && sessionStorage.getItem('authRole')) || null;
 
   const links = useMemo(() => {
     const common = [

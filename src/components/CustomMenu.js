@@ -20,7 +20,7 @@ import { useThemeMode } from '../contexts/ThemeModeContext';
 
 export default function CustomMenu(props) {
   const { mode, toggleMode } = useThemeMode();
-  const role = (typeof window !== 'undefined' && window.localStorage.getItem('authRole')) || null;
+  const role = (typeof window !== 'undefined' && sessionStorage.getItem('authRole')) || null;
   const isSuperAdmin = role === 'super_admin';
   const defs = useResourceDefinitions();
   const navigate = useNavigate();

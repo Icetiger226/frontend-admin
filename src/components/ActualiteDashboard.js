@@ -32,6 +32,7 @@ import {
   Note as DraftIcon
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import { API_URL, credFetch } from '../apiConfig';
 
 const ActualiteDashboard = () => {
   const navigate = useNavigate();
@@ -54,12 +55,7 @@ const ActualiteDashboard = () => {
 
   const loadActualiteStats = async () => {
     try {
-      const token = localStorage.getItem('authToken');
-      const API = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
-
-      const response = await fetch(`${API}/actualites/stats`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await credFetch(`${API_URL}/actualites/stats`);
 
       if (response.ok) {
         const data = await response.json();
@@ -72,16 +68,11 @@ const ActualiteDashboard = () => {
 
   const loadRecentActualites = async () => {
     try {
-      const token = localStorage.getItem('authToken');
-      const API = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
-
-      const response = await fetch(`${API}/actualites?limit=5`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await credFetch(`${API_URL}/actualites`);
 
       if (response.ok) {
         const data = await response.json();
-        setRecentActualites(data);
+        setRecentActualites(Array.isArray(data) ? data.slice(0, 5) : []);
       }
     } catch (error) {
       console.error('Erreur lors du chargement des actualités récentes:', error);
