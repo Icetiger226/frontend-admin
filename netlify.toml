@@ -6,6 +6,8 @@
 [build.environment]
   NODE_VERSION = "18"
   NPM_VERSION = "9"
+  # Même origine que le site → cookies de session acceptés sur mobile (Safari / Chrome)
+  REACT_APP_API_URL = "/api"
 
 # Headers pour la sécurité et la performance
 [[headers]]
@@ -115,10 +117,12 @@
   to = "/404.html"
   status = 404
 
+# Proxy API → Render : le navigateur appelle uniquement votre domaine Netlify (cookies first-party)
 [[redirects]]
   from = "/api/*"
-  to = "/404.html"
-  status = 404
+  to = "https://backend-association.onrender.com/api/:splat"
+  status = 200
+  force = true
 
 # Gestion des erreurs
 [[redirects]]

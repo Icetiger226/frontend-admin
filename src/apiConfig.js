@@ -1,8 +1,12 @@
 /**
  * API base URL + fetch avec cookies httpOnly (access/refresh).
  * Pas de JWT dans localStorage : le navigateur envoie les cookies automatiquement.
+ *
+ * Production Netlify : REACT_APP_API_URL=/api (proxy same-origin → Render, voir netlify.toml).
+ * Local : http://localhost:5000/api
  */
-export const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+const raw = process.env.REACT_APP_API_URL;
+export const API_URL = (raw && raw.replace(/\/$/, '')) || 'http://localhost:5000/api';
 
 /**
  * GET/POST/etc. avec credentials + tentative de refresh si 401.
