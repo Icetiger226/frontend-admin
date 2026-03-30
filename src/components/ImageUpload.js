@@ -2,6 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Box, Typography, LinearProgress, Card, CardMedia, IconButton, Chip } from '@mui/material';
 import { CloudUpload, Delete, CheckCircle, Error } from '@mui/icons-material';
+import { API_URL, credFetch } from '../apiConfig';
 
 const ImageUpload = ({ onUpload, onRemove, existingImages = [], multiple = true, maxFiles = 10, folder = 'activites' }) => {
   const [uploading, setUploading] = useState(false);
@@ -20,8 +21,7 @@ const ImageUpload = ({ onUpload, onRemove, existingImages = [], multiple = true,
       formData.append('folder', folder);
 
       try {
-        const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
-        const response = await fetch(`${apiUrl}/upload/${multiple ? 'images' : 'image'}`, {
+        const response = await credFetch(`${API_URL}/upload/${multiple ? 'images' : 'image'}`, {
           method: 'POST',
           body: formData,
         });

@@ -20,11 +20,13 @@ function getCookie(name) {
  * GET/POST/etc. avec credentials + tentative de refresh si 401.
  */
 export async function credFetch(url, options = {}) {
+  const isFormData =
+    typeof FormData !== 'undefined' && options?.body instanceof FormData;
   const opts = {
     ...options,
     credentials: 'include',
     headers: {
-      ...(options.body && !options.headers?.['Content-Type']
+      ...(!isFormData && options.body && !options.headers?.['Content-Type']
         ? { 'Content-Type': 'application/json' }
         : {}),
       ...(options.headers || {}),
