@@ -79,7 +79,7 @@ export const SponsorEdit = (props) => (
           <TextInput source="siteWeb" fullWidth />
           <BooleanInput
             source="principal"
-            label="Marquer comme sponsor principal (affiché dans le carousel)"
+            label="Marquer comme sponsor principal (affiché dans Partenaires Principaux)"
             defaultValue={false}
           />
           <NumberInput
@@ -112,7 +112,7 @@ export const SponsorCreate = (props) => (
           <TextInput source="siteWeb" fullWidth />
           <BooleanInput
             source="principal"
-            label="Marquer comme sponsor principal (affiché dans le carousel)"
+            label="Marquer comme sponsor principal (affiché dans Partenaires Principaux)"
             defaultValue={false}
           />
           <NumberInput
